@@ -2,5 +2,9 @@
   "firestore": {
     "rules": "firestore.rules",
     "indexes": "firestore.indexes.json"
+  },
+  "hosting": {
+    "site": "ics4u-e6485-20825",
+    "public": "public"
   }
 }
