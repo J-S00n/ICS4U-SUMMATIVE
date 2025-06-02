@@ -1,0 +1,88 @@
+.nav-link {
+    text-decoration: none;
+    color: #28a745;
+    font-size: 1.1rem;
+    padding: 10px 15px;
+    border: 1px solid transparent;
+    border-radius: 4px;
+    transition: background-color 0.3s, color 0.3s, border-color 0.3s;
+}
+
+.nav-link:hover {
+    background-color: #28a745;
+    color: #fff;
+    border-color: #28a745;
+}
+
+.nav-link.active {
+    background-color: #1e7e34;
+    color: #fff;
+    border-color: #1e7e34;
+}
+
+.movies-container {
+    display: flex;
+    flex-direction: column;
+    font-family: Arial, sans-serif;
+    padding-left: 20px;
+    padding-right: 20px;
+    background-color: #1d3557;
+    min-height: 100vh;
+}
+
+.genres-and-movies {
+    display: flex;
+    flex: 1;
+    gap: 20px;
+    margin-top: 5px;
+}
+
+.genres {
+    flex: 0 0 200px;
+    /* Fixed width for genres */
+    background-color: #f1faee;
+    padding: 15px;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    overflow-y: auto;
+    /* Allows scrolling if content exceeds height */
+    margin-bottom: 20px;
+    /* Adds space at the bottom */
+}
+
+.genres ul {
+    display: flex;
+    flex-direction: column;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.genres li {
+    font-size: 1.2rem;
+    font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+    font-weight: 600;
+    color: #333;
+    cursor: pointer;
+    transition: color 0.3s;
+    margin-bottom: 15px;
+    /* Space between items */
+}
+
+.genres li:hover {
+    color: #007bff;
+}
+
+.movie-list {
+    flex: 1;
+    /* Takes up the remaining space */
+    background-color: #f1faee;
+    padding: 5px;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    justify-content: center;
+    align-items: center;
+}
