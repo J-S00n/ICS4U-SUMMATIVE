@@ -53,7 +53,6 @@ function SearchView() {
                                 disabled={cart.has(movie.id)}
                                 onClick={() => {
                                     setCart((prev) => prev.set(movie.id, movie));
-                                    alert(`${movie.title} has been added to your cart!`);
                                 }}
                             >
                                 {cart.has(movie.id) ? "Added" : "Buy"}
