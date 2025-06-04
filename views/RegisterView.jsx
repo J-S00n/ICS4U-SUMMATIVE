@@ -1,13 +1,14 @@
 import { useNavigate, Link } from "react-router-dom";
 import { useStoreContext } from "../context/user";
 import { useState, useRef } from "react";
-import { Map } from "immutable";
+import { createUserWithEmailAndPassword, signInWithPopup, GoogleAuthProvider } from "firebase/auth";
+import { auth } from "../firebase"; // Adjust the import path as necessary
 import "./RegisterView.css";
 
 function RegisterView() {
 
     const navigate = useNavigate();
-    const { setEmail, setFirstName, setLastName, setPassword, setLoggedIn, setChoices, genres } = useStoreContext();
+    const { user, setUser, setChoices, genres } = useStoreContext();
     const [formData, setFormData] = useState({
         firstName: "",
         lastName: "",
@@ -19,7 +20,7 @@ function RegisterView() {
 
     const checkboxesRef = useRef({});
 
-    const handleRegister = (e) => {
+    const handleRegister = async (e) => {
         e.preventDefault();
 
         if (formData.password !== formData.confirmPassword) {
@@ -41,15 +42,36 @@ function RegisterView() {
             .filter((genre) => genre) //remove undefined genres
             .sort((a, b) => a.genre.localeCompare(b.genre));
 
-        alert("Registration successful!");
-        setEmail(formData.email);
-        setFirstName(formData.firstName);
-        setLastName(formData.lastName);
-        setPassword(formData.password);
-        setChoices(sortedGenres);
-        setLoggedIn(true);
-        navigate("/movies/genre/28");
+        try {
+            const result = await createUserWithEmailAndPassword(
+                auth,
+                formData.email,
+                formData.password
+            );
+            alert("Registration successful!");
+            setUser(result.user);
+            setChoices(sortedGenres);
+            navigate("/movies/genre/28");
+
+        } catch (error) {
+            console.error("Error registering user:", error);
+            alert("Registration failed. Please try again.");
+            return;
+        }
     };
+
+    const handleGoogleSignIn = async () => {
+        const provider = new GoogleAuthProvider();
+        try {
+            const result = await signInWithPopup(auth, provider);
+            setUser(result.user);
+            alert("Google Sign-In successful!");
+            navigate("/movies/genre/28");
+        } catch (error) {
+            console.error("Error during Google Sign-In:", error);
+            alert("Google Sign-In failed. Please try again.");
+        }
+    }
 
     return (
         <div className="register-container">
@@ -111,6 +133,9 @@ function RegisterView() {
                     Already have an account? <Link to="/login">Login</Link>
                 </p>
             </form>
+            <button onClick={handleGoogleSignIn} className="google-signin-button">
+                Sign in with Google
+            </button>
         </div>
     );
 }

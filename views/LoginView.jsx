@@ -1,26 +1,52 @@
 import { useNavigate, Link } from "react-router-dom";
 import { useStoreContext } from "../context/user";
 import { useState } from "react";
+import { signInWithEmailAndPassword, signInWithPopup, GoogleAuthProvider } from "firebase/auth";
+import { auth, firestore } from "../firebase";
 import "./LoginView.css"
 
 function LoginView() {
 
     const navigate = useNavigate();
-    const { email, password, setLoggedIn } = useStoreContext();
+    const { setUser } = useStoreContext();
     const [formData, setFormData] = useState({
         email: "",
         password: "",
     });
 
-    const handleLogin = (e) => {
+    const handleLogin = async (e) => {
         e.preventDefault();
-        if (!formData.email == email || !formData.password == password) {
+        if (!formData.email || !formData.password) {
             alert("Email or Password incorrect!");
             return;
         }
-        setLoggedIn(true);
-        navigate("/movies/genre/28");
+
+        try {
+            const result = await signInWithEmailAndPassword(
+                auth,
+                formData.email,
+                formData.password
+            );
+            setUser(result.user);
+            navigate("/movies/genre/28");
+        } catch (error) {
+            console.error("Error logging in:", error);
+            alert("Login failed. Please check your credentials.");
+            return;
+        }
     };
+
+    const handleGoogleLogin = async () => {
+        const provider = new GoogleAuthProvider();
+        try {
+            const result = await signInWithPopup(auth, provider);
+            setUser(result.user);
+            navigate("/movies/genre/28");
+        } catch (error) {
+            console.error("Error logging in with Google:", error);
+            alert("Google login failed. Please try again.");
+        }
+    }
 
     return (
         <div className="login-container">
@@ -48,6 +74,9 @@ function LoginView() {
                         Don't have an account? <Link to="/register">Register</Link>
                     </p>
                 </form>
+                <button onClick={handleGoogleLogin} className="google-login-button">
+                    Login with Google
+                </button>
             </div>
         </div>
     );
