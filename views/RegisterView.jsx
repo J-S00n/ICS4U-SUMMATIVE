@@ -2,7 +2,7 @@ import { useNavigate, Link } from "react-router-dom";
 import { useStoreContext } from "../context/user";
 import { useState, useRef } from "react";
 import { createUserWithEmailAndPassword, signInWithPopup, GoogleAuthProvider } from "firebase/auth";
-import { auth } from "../firebase"; // Adjust the import path as necessary
+import { auth } from "../src/firebase";
 import "./RegisterView.css";
 
 function RegisterView() {
