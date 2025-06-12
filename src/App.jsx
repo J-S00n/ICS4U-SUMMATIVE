@@ -10,7 +10,7 @@ import DetailView from '../views/DetailView.jsx';
 import SearchView from '../views/SearchView.jsx';
 import CartView from '../views/CartView.jsx';
 import SettingsView from '../views/SettingsView.jsx';
-import ProtectedRoutes from '../Views/ProtectedRoutes.jsx';
+import ProtectedRoutes from '../views/ProtectedRoutes.jsx';
 import './App.css'
 
 function App() {

@@ -3,9 +3,9 @@ import { useStoreContext } from "../context/user.jsx";
 
 function ProtectedRoutes() {
 
-    const { loggedIn } = true;
+    const loggedIn = true;
     //useStoreContext();
-   
+
     return (
         loggedIn ? <Outlet /> : <Navigate to="/login" />
     );

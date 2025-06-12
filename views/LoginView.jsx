@@ -28,7 +28,7 @@ function LoginView() {
                 formData.password
             );
             setUser(result.user);
-            navigate("/movies/genre/28");
+            navigate(`/movies/genre/${sortedGenres[0].id}`);
         } catch (error) {
             console.error("Error logging in:", error);
             alert("Login failed. Please check your credentials.");
@@ -41,7 +41,7 @@ function LoginView() {
         try {
             const result = await signInWithPopup(auth, provider);
             setUser(result.user);
-            navigate("/movies/genre/28");
+            navigate(`/movies/genre/${sortedGenres[0].id}`);
         } catch (error) {
             console.error("Error logging in with Google:", error);
             alert("Google login failed. Please try again.");

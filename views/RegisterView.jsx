@@ -1,14 +1,15 @@
 import { useNavigate, Link } from "react-router-dom";
 import { useStoreContext } from "../context/user";
 import { useState, useRef } from "react";
-import { createUserWithEmailAndPassword, signInWithPopup, GoogleAuthProvider } from "firebase/auth";
-import { auth } from "../src/firebase";
+import { createUserWithEmailAndPassword, signInWithPopup, GoogleAuthProvider, signOut } from "firebase/auth";
+import { auth, firestore } from "../src/firebase";
+import { doc, setDoc, getDoc } from "firebase/firestore";
 import "./RegisterView.css";
 
 function RegisterView() {
 
     const navigate = useNavigate();
-    const { user, setUser, setChoices, genres } = useStoreContext();
+    const { setUser, setChoices, genres } = useStoreContext();
     const [formData, setFormData] = useState({
         firstName: "",
         lastName: "",
@@ -20,7 +21,7 @@ function RegisterView() {
 
     const checkboxesRef = useRef({});
 
-    const handleRegister = async (e) => {
+    const registerByEmail = async (e) => {
         e.preventDefault();
 
         if (formData.password !== formData.confirmPassword) {
@@ -51,22 +52,49 @@ function RegisterView() {
             alert("Registration successful!");
             setUser(result.user);
             setChoices(sortedGenres);
-            navigate("/movies/genre/28");
+            const docRef = doc(firestore, "users", result.user.email);
+            await setDoc(docRef, { sortedGenres: sortedGenres.map((genre) => genre.id) });
+            navigate(`/movies/genre/${sortedGenres[0].id}`);
 
         } catch (error) {
             console.error("Error registering user:", error);
-            alert("Registration failed. Please try again.");
+            alert("Registration failed. If you already have an acccount, please login!");
             return;
         }
     };
 
-    const handleGoogleSignIn = async () => {
+    const handleGoogleSignRegister = async () => {
+        const selectedGenres = Object.keys(checkboxesRef.current)
+            .filter((genreId) => checkboxesRef.current[genreId].checked)
+            .map(Number);
+
+        if (selectedGenres.length < 5) {
+            alert("Please select at least 5 genres.");
+            return;
+        }
+        const sortedGenres = selectedGenres
+            .map((genreId) => genres.find((genre) => genre.id === genreId))
+            .filter((genre) => genre) //remove undefined genres
+            .sort((a, b) => a.genre.localeCompare(b.genre));
+
         const provider = new GoogleAuthProvider();
         try {
             const result = await signInWithPopup(auth, provider);
-            setUser(result.user);
-            alert("Google Sign-In successful!");
-            navigate("/movies/genre/28");
+            const docRef = doc(firestore, "users", result.user.email);
+            const docSnap = await getDoc(docRef);
+            if (docSnap.exists()) {
+                setUser(null);
+                await signOut(auth);
+                alert("User already exists. Please login instead.");
+                return;
+            } else {
+                setUser(result.user);
+                setChoices(sortedGenres);
+                await setDoc(docRef, {
+                    choices: sortedGenres.map((genre) => genre.id),
+                });
+            }
+            navigate(`/movies/genre/${sortedGenres[0].id}`);
         } catch (error) {
             console.error("Error during Google Sign-In:", error);
             alert("Google Sign-In failed. Please try again.");
@@ -76,7 +104,7 @@ function RegisterView() {
     return (
         <div className="register-container">
             <h1 className="register-title">Register</h1>
-            <form onSubmit={handleRegister} className="register-form">
+            <form onSubmit={registerByEmail} className="register-form">
                 <input
                     type="text"
                     placeholder="First Name"
@@ -133,7 +161,7 @@ function RegisterView() {
                     Already have an account? <Link to="/login">Login</Link>
                 </p>
             </form>
-            <button onClick={handleGoogleSignIn} className="google-signin-button">
+            <button onClick={handleGoogleSignRegister} className="google-signin-button">
                 Sign in with Google
             </button>
         </div>
