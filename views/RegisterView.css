@@ -97,3 +97,27 @@
 .login-link a:hover {
     color: #2575fc;
 }
+
+.google-register-button {
+    margin-top: 20px;
+    background: #fff;
+    color: #444;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    padding: 10px;
+    font-size: 1rem;
+    font-weight: 500;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+    transition: background 0.3s, color 0.3s, border-color 0.3s;
+}
+
+.google-register-button:hover {
+    background: #f5f5f5;
+    color: #2575fc;
+    border-color: #2575fc;
+}

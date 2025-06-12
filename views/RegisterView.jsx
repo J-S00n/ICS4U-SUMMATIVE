@@ -1,7 +1,7 @@
 import { useNavigate, Link } from "react-router-dom";
 import { useStoreContext } from "../context/user";
 import { useState, useRef } from "react";
-import { createUserWithEmailAndPassword, signInWithPopup, GoogleAuthProvider, signOut } from "firebase/auth";
+import { createUserWithEmailAndPassword, signInWithPopup, GoogleAuthProvider, signOut, updateProfile } from "firebase/auth";
 import { auth, firestore } from "../src/firebase";
 import { doc, setDoc, getDoc } from "firebase/firestore";
 import "./RegisterView.css";
@@ -30,8 +30,8 @@ function RegisterView() {
         }
 
         const selectedGenres = Object.keys(checkboxesRef.current)
-            .filter((genreId) => checkboxesRef.current[genreId].checked)
-            .map(Number);
+            .filter((genreId) => checkboxesRef.current[genreId] && checkboxesRef.current[genreId].checked)
+            .map((genreId) => Number(genreId));
 
         if (selectedGenres.length < 5) {
             alert("Please select at least 5 genres.");
@@ -49,11 +49,18 @@ function RegisterView() {
                 formData.email,
                 formData.password
             );
-            alert("Registration successful!");
+            await updateProfile(result.user, {
+                displayName: `${formData.firstName} ${formData.lastName}`,
+            });
             setUser(result.user);
             setChoices(sortedGenres);
             const docRef = doc(firestore, "users", result.user.email);
-            await setDoc(docRef, { sortedGenres: sortedGenres.map((genre) => genre.id) });
+            await setDoc(docRef, {
+                firstName: formData.firstName,
+                lastName: formData.lastName,
+                choices: sortedGenres.map((genre) => genre.id),
+            });
+            alert("Registration successful!");
             navigate(`/movies/genre/${sortedGenres[0].id}`);
 
         } catch (error) {
@@ -149,7 +156,7 @@ function RegisterView() {
                         <div key={item.id}>
                             <input
                                 type="checkbox"
-                                ref={(el) => { checkboxesRef.current[item.id] = el; }}
+                                ref={(el) => { checkboxesRef.current[String(item.id)] = el; }}
                                 style={{ cursor: "pointer" }}
                             />
                             <label className="genre-name">{item.genre}</label>
@@ -161,8 +168,8 @@ function RegisterView() {
                     Already have an account? <Link to="/login">Login</Link>
                 </p>
             </form>
-            <button onClick={handleGoogleSignRegister} className="google-signin-button">
-                Sign in with Google
+            <button onClick={handleGoogleSignRegister} className="google-register-button">
+                Register with Google
             </button>
         </div>
     );

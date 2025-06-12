@@ -1,11 +1,14 @@
 import { useNavigate, Link } from 'react-router-dom';
 import { useStoreContext } from '../context/user';
 import { useEffect, useState } from 'react';
+import { auth, firestore } from "../src/firebase";
+import { doc, setDoc, getDoc } from "firebase/firestore";
+import { signOut } from "firebase/auth";
 import axios from 'axios';
 
 function Header() {
     const navigate = useNavigate();
-    const { setLoggedIn, loggedIn, firstName } = useStoreContext();
+    const { user } = useStoreContext();
     const [searchTerm, setSearchTerm] = useState("");
     const [searchResults, setSearchResults] = useState([]);
     const [showDropdown, setShowDropdown] = useState(false);
@@ -34,15 +37,15 @@ function Header() {
         return () => clearTimeout(debounce);
     }, [searchTerm]);
 
-    function logout() {
-        setLoggedIn(false);
+    async function logout() {
+        await signOut(auth);
         navigate("/");
     }
 
     return (
         <div className="header">
             <h1>VibeVision</h1>
-            {loggedIn ? (
+            {user ? (
                 <>
                     <input
                         type="text"
@@ -81,7 +84,7 @@ function Header() {
                             )}
                         </div>
                     )}
-                    <p className="welcome-msg">Welcome {firstName}!</p>
+                    <p className="welcome-msg">Welcome {user.displayName}!</p>
                     <Link to={'/cart'} className="cart-button">Cart</Link>
                     <Link to={'/settings'} className="settings">Settings</Link>
                     <button onClick={logout} className="logout">Logout</button>

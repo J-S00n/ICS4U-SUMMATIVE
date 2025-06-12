@@ -31,7 +31,7 @@ export const StoreProvider = ({ children }) => {
         onAuthStateChanged(auth, user => {
             setUser(user);
             if (user) {
-                const sessionCart = sessionStorage.getItem(user.email);
+                const sessionCart = sessionStorage.getItem(user.uid);
                 if (sessionCart) {
                     setCart(Map(JSON.parse(sessionCart)));
                 } else {

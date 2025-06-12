@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import "./SettingsView.css";
 
 function SettingsView() {
-    const { email, firstName, setFirstName, lastName, setLastName, choices, setChoices, genres } = useStoreContext();
+    const { user, choices, setChoices, genres } = useStoreContext();
     const [formData, setFormData] = useState({
         firstName: "",
         lastName: "",

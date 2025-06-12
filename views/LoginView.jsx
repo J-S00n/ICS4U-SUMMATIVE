@@ -2,13 +2,13 @@ import { useNavigate, Link } from "react-router-dom";
 import { useStoreContext } from "../context/user";
 import { useState } from "react";
 import { signInWithEmailAndPassword, signInWithPopup, GoogleAuthProvider } from "firebase/auth";
-import { auth } from "../src/firebase";
+import { auth, firestore } from "../src/firebase";
+import { doc, getDoc } from "firebase/firestore";
 import "./LoginView.css"
 
 function LoginView() {
-
     const navigate = useNavigate();
-    const { setUser } = useStoreContext();
+    const { setUser, choices, setChoices, genres } = useStoreContext();
     const [formData, setFormData] = useState({
         email: "",
         password: "",
@@ -16,10 +16,6 @@ function LoginView() {
 
     const handleLogin = async (e) => {
         e.preventDefault();
-        if (!formData.email || !formData.password) {
-            alert("Email or Password incorrect!");
-            return;
-        }
 
         try {
             const result = await signInWithEmailAndPassword(
@@ -27,7 +23,21 @@ function LoginView() {
                 formData.email,
                 formData.password
             );
-            setUser(result.user);
+            const docRef = doc(firestore, "users", result.user.email);
+            const docSnap = await getDoc(docRef);
+            const userData = docSnap.data();
+            const firstName = userData.firstName || "User";
+            const lastName = userData.lastName || "Account";
+            const selectedGenres = userData.choices || [];
+            const sortedGenres = selectedGenres
+                .map((genreId) => genres.find((genre) => genre.id === genreId))
+                .filter((genre) => genre) //remove undefined genres
+                .sort((a, b) => a.genre.localeCompare(b.genre));
+            setUser({ ...result.user, firstName, lastName });
+            console.log("User logged in:", result.user);
+            console.log("First Name:", firstName);
+            console.log("Last Name:", lastName);
+            setChoices(sortedGenres);
             navigate(`/movies/genre/${sortedGenres[0].id}`);
         } catch (error) {
             console.error("Error logging in:", error);
@@ -40,7 +50,16 @@ function LoginView() {
         const provider = new GoogleAuthProvider();
         try {
             const result = await signInWithPopup(auth, provider);
+            const docRef = doc(firestore, "users", result.user.email);
+            const docSnap = await getDoc(docRef);
+            const selectedGenres = docSnap.data()?.choices || [];
+            const sortedGenres = selectedGenres
+                .map((genreId) => genres.find((genre) => genre.id === genreId))
+                .filter((genre) => genre) //remove undefined genres
+                .sort((a, b) => a.genre.localeCompare(b.genre));
+
             setUser(result.user);
+            setChoices(sortedGenres);
             navigate(`/movies/genre/${sortedGenres[0].id}`);
         } catch (error) {
             console.error("Error logging in with Google:", error);
