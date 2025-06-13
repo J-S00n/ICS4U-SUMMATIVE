@@ -1,9 +1,12 @@
 import { useStoreContext } from "../context/user";
 import { useNavigate } from "react-router-dom";
+import { firestore } from "../src/firebase";
+import { doc, setDoc, getDoc } from "firebase/firestore";
+import { Map } from "immutable";
 import "./CartView.css";
 
 function CartView() {
-    const { cart, setCart } = useStoreContext();
+    const { cart, setCart, user, prevPurchase, setPrevPurchase } = useStoreContext();
     const navigate = useNavigate();
 
     if (cart.size === 0) {
@@ -16,6 +19,33 @@ function CartView() {
                 </button>
             </div>
         );
+    }
+
+    async function handleCheckout() {
+        const purchases = prevPurchase.merge(cart);
+        setPrevPurchase(purchases);
+        const docRef = doc(firestore, "users", user.email);
+        try {
+            await setDoc(docRef, {
+                prevPurchase: purchases.toJS(),
+            }, { merge: true });
+            setCart(Map({})); // Clear the cart after checkout
+            sessionStorage.removeItem(user.email);
+            alert("Checkout successful! Thank you for your purchase!");
+            navigate("/movies/genre/28");
+        } catch (error) {
+            console.error("Error during checkout:", error);
+        }
+    }
+
+
+    function removeCartItem(itemId) {
+        setCart((prev) => {
+            const newCart = prev.delete(itemId);
+            sessionStorage.removeItem(user.email);
+            sessionStorage.setItem(user.email, JSON.stringify(newCart.toJS()));
+            return newCart;
+        });
     }
 
     return (
@@ -34,7 +64,7 @@ function CartView() {
                             <p>{value.overview}</p>
                             <button
                                 onClick={() => {
-                                    setCart((prev) => prev.delete(value.id));
+                                    removeCartItem(key);
                                 }}
                             >
                                 Remove from Cart
@@ -43,6 +73,15 @@ function CartView() {
                     </div>
                 );
             })}
+            <button
+                disabled={cart.size === 0}
+                onClick={() => {
+                    handleCheckout();
+                }}
+                className="checkout-button"
+            >
+                Checkout
+            </button>
             <button
                 onClick={() => navigate("/movies/genre/28")} className="cart-back-button">Back
             </button>

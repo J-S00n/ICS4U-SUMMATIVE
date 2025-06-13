@@ -5,7 +5,7 @@ import LoginView from '../views/LoginView.jsx';
 import RegisterView from '../views/RegisterView.jsx';
 import ErrorView from '../views/ErrorView.jsx';
 import MoviesView from '../views/MoviesView.jsx';
-import GenreView from '../Views/GenreView.jsx';
+import GenreView from '../views/GenreView.jsx';
 import DetailView from '../views/DetailView.jsx';
 import SearchView from '../views/SearchView.jsx';
 import CartView from '../views/CartView.jsx';

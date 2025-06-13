@@ -10,7 +10,7 @@ import Feature from "../components/Feature.jsx";
 function MoviesView() {
     const location = useLocation();
     const { choices } = useStoreContext();
-
+    console.log("MoviesView rendered with choices:", choices);
     return (
         <div className="movies-container">
             <Header />

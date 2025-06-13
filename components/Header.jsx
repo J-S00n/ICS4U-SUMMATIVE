@@ -8,7 +8,7 @@ import axios from 'axios';
 
 function Header() {
     const navigate = useNavigate();
-    const { user } = useStoreContext();
+    const { user, setUser, setPrevPurchases } = useStoreContext();
     const [searchTerm, setSearchTerm] = useState("");
     const [searchResults, setSearchResults] = useState([]);
     const [showDropdown, setShowDropdown] = useState(false);

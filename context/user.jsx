@@ -11,6 +11,7 @@ export const StoreProvider = ({ children }) => {
     const [user, setUser] = useState(null);
     const [choices, setChoices] = useState(Map({}));
     const [cart, setCart] = useState(Map({}));
+    const [prevPurchase, setPrevPurchase] = useState(Map({}));
     const [genres, setGenres] = useState([
         { genre: "Action", id: 28 },
         { genre: "Adventure", id: 12 },
@@ -28,7 +29,7 @@ export const StoreProvider = ({ children }) => {
     ]);
 
     useEffect(() => {
-        onAuthStateChanged(auth, user => {
+        onAuthStateChanged(auth, (user) => {
             setUser(user);
             if (user) {
                 const sessionCart = sessionStorage.getItem(user.uid);
@@ -37,13 +38,30 @@ export const StoreProvider = ({ children }) => {
                 } else {
                     setCart(Map({}));
                 }
+                const getPrevPurchase = async () => {
+                    try {
+                        const docRef = doc(firestore, "users", user.uid);
+                        const docSnap = await getDoc(docRef);
+                        if (docSnap.exists()) {
+                            const prevCart = Map(docSnap.data().prevPurchase);
+                            setPrevPurchase(prevCart);
+                        } else {
+                            setPrevPurchase(Map({}));
+                        }
+                    } catch (error) {
+                        console.log(error);
+                    }
+                };
+                getPrevPurchase();
+                
                 const getGenres = async () => {
                     try {
                         const docRef = doc(firestore, "users", user.uid);
                         const docSnap = await getDoc(docRef);
                         if (docSnap.exists()) {
-                            const data = docSnap.data();
-                            setChoices(Map(data.choices || {}));
+                            const genres = docSnap.data().choices;
+                            setChoices(Map(genres));
+
                         }
                     } catch (error) {
                         console.log(error);
@@ -52,11 +70,11 @@ export const StoreProvider = ({ children }) => {
                 getGenres();
             }
         });
-    });
+    }, [auth]);
 
     return (
         <StoreContext.Provider value={{
-            user, setUser, cart, setCart, choices, setChoices, genres, setGenres,
+            user, setUser, cart, setCart, choices, setChoices, genres, setGenres, prevPurchase, setPrevPurchase
         }}>
             {children}
         </StoreContext.Provider>

@@ -34,9 +34,6 @@ function LoginView() {
                 .filter((genre) => genre) //remove undefined genres
                 .sort((a, b) => a.genre.localeCompare(b.genre));
             setUser({ ...result.user, firstName, lastName });
-            console.log("User logged in:", result.user);
-            console.log("First Name:", firstName);
-            console.log("Last Name:", lastName);
             setChoices(sortedGenres);
             navigate(`/movies/genre/${sortedGenres[0].id}`);
         } catch (error) {
