@@ -1,9 +1,9 @@
 import { createContext, useContext, useState, useEffect } from "react";
-import { get, Map, set } from "immutable";
+import { Map } from "immutable";
 import { onAuthStateChanged } from "firebase/auth";
 import { auth } from "../src/firebase";
 import { firestore } from "../src/firebase";
-import { doc, setDoc, getDoc } from "firebase/firestore";
+import { doc, getDoc } from "firebase/firestore";
 
 const StoreContext = createContext();
 
@@ -61,7 +61,6 @@ export const StoreProvider = ({ children }) => {
                         if (docSnap.exists()) {
                             const genres = docSnap.data().choices;
                             setChoices(Map(genres));
-
                         }
                     } catch (error) {
                         console.log(error);
