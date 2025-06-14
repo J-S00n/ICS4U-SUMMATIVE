@@ -161,36 +161,55 @@
     letter-spacing: 0.5px;
 }
 
+.previous-purchases-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 24px;
+    justify-content: flex-start;
+}
+
 .purchase-item {
     display: flex;
+    flex-direction: column;
     align-items: center;
-    gap: 20px;
-    margin-bottom: 18px;
-    background: #f1f6fb;
+    width: 160px;
+    background: #f5faff;
     border-radius: 10px;
-    padding: 18px 24px;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.06);
+    padding: 16px 20px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
     transition: box-shadow 0.2s, background 0.2s;
+    margin-bottom: 0;
 }
 
 .purchase-item:hover {
-    background: #e6f0fa;
-    box-shadow: 0 4px 16px rgba(0,123,255,0.08);
+    background: #eaf4fb;
+    box-shadow: 0 4px 16px rgba(0,123,255,0.10);
 }
 
 .purchase-item img {
-    width: 72px;
-    height: 104px;
+    width: 100px;
+    height: 100px;
     object-fit: cover;
     border-radius: 6px;
     background: #eaeaea;
     box-shadow: 0 1px 4px rgba(0,0,0,0.07);
+    margin-bottom: 12px;
+    display: block;
+}
+
+.purchase-item-details {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
 }
 
 .purchase-item p {
-    margin: 0;
-    font-size: 1.12rem;
+    margin: 0 0 4px 0;
+    font-size: 1.08rem;
     color: #222;
     font-weight: 600;
     letter-spacing: 0.2px;
+    line-height: 1.3;
 }

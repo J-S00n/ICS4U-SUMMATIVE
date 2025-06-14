@@ -10,7 +10,7 @@ function SearchView() {
     const [movies, setMovies] = useState([]);
     const [page, setPage] = useState(1);
     const [totalResults, setTotalResults] = useState(0);
-    const { cart, setCart } = useStoreContext();
+    const { cart, setCart, user, prevPurchase } = useStoreContext();
     const moviesPerPage = 20;
 
     useEffect(() => {
@@ -33,6 +33,40 @@ function SearchView() {
 
     const maxPage = Math.ceil(totalResults / moviesPerPage);
 
+    const addCart = (id, title, poster) => {
+        if (!prevPurchase || !cart) {
+            console.error("Error: prevPurchase or cart is undefined");
+        } else if (cart.has(id + "")) {
+            alert("This movie is already in your cart.");
+            return;
+        } else if (prevPurchase.has(id + "")) {
+            alert("You have already purchased this movie.");
+            return;
+        }
+
+        setCart((prev) => {
+            const newCart = prev.set(id + "", { title, poster_path: poster });
+            sessionStorage.setItem(user.email, JSON.stringify(newCart.toJS())); // Use `newCart`
+            return newCart;
+        });
+
+    }
+
+    function status(id) {
+        if (!prevPurchase || !cart) {
+            console.error("Error: prevPurchases or cart is undefined");
+            return "Buy";
+        }
+
+        if (prevPurchase.has(id + "")) {
+            return "Purchased";
+        } else if (cart.has(id + "")) {
+            return "Added";
+        } else {
+            return "Buy";
+        }
+    }
+
     return (
         <div className="search-container">
             <h1>Search Results for "{query}"</h1>
@@ -49,13 +83,19 @@ function SearchView() {
                                 alt={movie.title}
                             />
                             <button
-                                className={cart.has(movie.id) ? "buy-button added" : "buy-button"}
-                                disabled={cart.has(movie.id)}
+                                //     className={cart.has(movie.id) ? "buy-button added" : "buy-button"}
+                                //     disabled={cart.has(movie.id)}
+                                //     onClick={() => {
+                                //         setCart((prev) => prev.set(movie.id, movie));
+                                //     }}
+                                // >
+                                //     {cart.has(movie.id) ? "Added" : "Buy"}
+                                className="buy-button"
+                                style={{ cursor: "pointer" }}
                                 onClick={() => {
-                                    setCart((prev) => prev.set(movie.id, movie));
-                                }}
-                            >
-                                {cart.has(movie.id) ? "Added" : "Buy"}
+                                    addCart(movie.id, movie.original_title, movie.poster_path);
+                                }}>
+                                {status(movie.id)}
                             </button>
                         </div>
                     ))
