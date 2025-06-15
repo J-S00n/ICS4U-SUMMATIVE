@@ -88,8 +88,8 @@ function RegisterView() {
         try {
             const result = await signInWithPopup(auth, provider);
             const docRef = doc(firestore, "users", result.user.email);
-            const docSnap = await getDoc(docRef);
-            if (docSnap.exists()) {
+            const userDoc = await getDoc(docRef);
+            if (userDoc.exists()) {
                 setUser(null);
                 await signOut(auth);
                 alert("User already exists. Please login instead.");

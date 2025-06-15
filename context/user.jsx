@@ -4,10 +4,12 @@ import { onAuthStateChanged } from "firebase/auth";
 import { auth } from "../src/firebase";
 import { firestore } from "../src/firebase";
 import { doc, getDoc } from "firebase/firestore";
+import { setPersistence, browserSessionPersistence } from "firebase/auth";
 
 const StoreContext = createContext();
 
 export const StoreProvider = ({ children }) => {
+    setPersistence(auth, browserSessionPersistence);
     const [user, setUser] = useState(null);
     const [choices, setChoices] = useState(Map({}));
     const [cart, setCart] = useState(Map({}));

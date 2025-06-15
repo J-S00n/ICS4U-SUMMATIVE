@@ -23,9 +23,9 @@ function LoginView() {
                 formData.email,
                 formData.password
             );
-            const docRef = doc(firestore, "users", result.user.uid);
-            const docSnap = await getDoc(docRef);
-            const userData = docSnap.data();
+            const docRef = doc(firestore, "users", result.user.email);
+            const userDoc = await getDoc(docRef);
+            const userData = userDoc.data();
             const firstName = userData.firstName || "User";
             const lastName = userData.lastName || "Account";
 

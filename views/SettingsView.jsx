@@ -101,8 +101,8 @@ function SettingsView() {
     }
 
     async function goBack() {
-        const docSnap = await getDoc(doc(firestore, "users", user.uid));
-        const genres = docSnap.data()?.choices || [];
+        const userDoc = await getDoc(doc(firestore, "users", user.uid));
+        const genres = userDoc.data()?.choices || [];
         navigate(`/movies/genre/${genres[0].id}`);
     }
 
