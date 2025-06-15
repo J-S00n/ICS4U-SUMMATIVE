@@ -198,13 +198,27 @@ function SettingsView() {
                 <div className="genre-selection">
                     <h2>Please select at least 5 genres!</h2>
                     {genres?.map((item) => {
-                        const isChecked = choices.some(choice => choice.id === item.id);
+                        // Use choices from context to determine checked state
+                        const isChecked = choices?.some(choice => choice.id === item.id);
                         return (
                             <div key={item.id}>
                                 <input
                                     type="checkbox"
                                     ref={(el) => { checkboxesRef.current[item.id] = el; }}
-                                    defaultChecked={isChecked}
+                                    checked={isChecked}
+                                    onChange={() => {
+                                        // Update choices in state and persist to Firestore
+                                        let updatedChoices;
+                                        if (isChecked) {
+                                            updatedChoices = choices.filter(choice => choice.id !== item.id);
+                                        } else {
+                                            updatedChoices = [...choices, item];
+                                        }
+                                        setChoices(updatedChoices);
+                                        // Persist to Firestore
+                                        const docRef = doc(firestore, "users", user.uid);
+                                        setDoc(docRef, { choices: updatedChoices }, { merge: true });
+                                    }}
                                     style={{ cursor: "pointer" }}
                                 />
                                 <label className="genre-name">{item.genre}</label>

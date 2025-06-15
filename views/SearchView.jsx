@@ -83,13 +83,6 @@ function SearchView() {
                                 alt={movie.title}
                             />
                             <button
-                                //     className={cart.has(movie.id) ? "buy-button added" : "buy-button"}
-                                //     disabled={cart.has(movie.id)}
-                                //     onClick={() => {
-                                //         setCart((prev) => prev.set(movie.id, movie));
-                                //     }}
-                                // >
-                                //     {cart.has(movie.id) ? "Added" : "Buy"}
                                 className="buy-button"
                                 style={{ cursor: "pointer" }}
                                 onClick={() => {

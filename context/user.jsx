@@ -12,6 +12,7 @@ export const StoreProvider = ({ children }) => {
     setPersistence(auth, browserSessionPersistence);
     const [user, setUser] = useState(null);
     const [choices, setChoices] = useState(Map({}));
+    const [loggedIn, setLoggedIn] = useState(true);
     const [cart, setCart] = useState(Map({}));
     const [prevPurchase, setPrevPurchase] = useState(Map({}));
     const [genres] = useState([
@@ -36,6 +37,7 @@ export const StoreProvider = ({ children }) => {
             if (firebaseUser) {
                 await loadUserData(firebaseUser.uid);
                 loadCartFromStorage(firebaseUser.uid);
+                loggedIn ? setLoggedIn(true) : setLoggedIn(false);
             } else {
                 clearState();
             }
@@ -92,7 +94,7 @@ export const StoreProvider = ({ children }) => {
 
     return (
         <StoreContext.Provider value={{
-            user, setUser, cart, setCart, choices, setChoices, genres, prevPurchase, setPrevPurchase
+            user, setUser, cart, setCart, choices, setChoices, genres, prevPurchase, setPrevPurchase, loggedIn, setLoggedIn
         }}>
             {children}
         </StoreContext.Provider>
