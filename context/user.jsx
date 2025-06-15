@@ -12,7 +12,7 @@ export const StoreProvider = ({ children }) => {
     const [choices, setChoices] = useState(Map({}));
     const [cart, setCart] = useState(Map({}));
     const [prevPurchase, setPrevPurchase] = useState(Map({}));
-    const [genres, setGenres] = useState([
+    const [genres] = useState([
         { genre: "Action", id: 28 },
         { genre: "Adventure", id: 12 },
         { genre: "Animation", id: 16 },
@@ -25,61 +25,77 @@ export const StoreProvider = ({ children }) => {
         { genre: "Science Fiction", id: 878 },
         { genre: "Thriller", id: 53 },
         { genre: "War", id: 10752 },
-        { genre: "Westerm", id: 37 },
+        { genre: "Western", id: 37 },
     ]);
 
     useEffect(() => {
-        onAuthStateChanged(auth, (user) => {
-            setUser(user);
-            if (user) {
-                const sessionCart = sessionStorage.getItem(user.uid);
-                if (sessionCart) {
-                    setCart(Map(JSON.parse(sessionCart)));
-                } else {
-                    setCart(Map({}));
-                }
-                const getPrevPurchase = async () => {
-                    try {
-                        const docRef = doc(firestore, "users", user.uid);
-                        const docSnap = await getDoc(docRef);
-                        if (docSnap.exists()) {
-                            const prevCart = Map(docSnap.data().prevPurchase);
-                            setPrevPurchase(prevCart);
-                        } else {
-                            setPrevPurchase(Map({}));
-                        }
-                    } catch (error) {
-                        console.log(error);
-                    }
-                };
-                getPrevPurchase();
-                
-                const getGenres = async () => {
-                    try {
-                        const docRef = doc(firestore, "users", user.uid);
-                        const docSnap = await getDoc(docRef);
-                        if (docSnap.exists()) {
-                            const genres = docSnap.data().choices;
-                            setChoices(Map(genres));
-                        }
-                    } catch (error) {
-                        console.log(error);
-                    }
-                };
-                getGenres();
+        const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
+            setUser(firebaseUser);
+            if (firebaseUser) {
+                await loadUserData(firebaseUser.uid);
+                loadCartFromStorage(firebaseUser.uid);
+            } else {
+                clearState();
             }
         });
-    }, [auth]);
+
+        return () => unsubscribe();
+    }, []);
+
+    const loadUserData = async (userId) => {
+        try {
+            const userDoc = await getDoc(doc(firestore, "users", userId));
+            if (userDoc.exists()) {
+                const genres = userDoc.data().choices;
+
+                if (Array.isArray(genres)) {
+                    setChoices(Map(genres.map(choice => [choice.id, choice])));
+                }else {
+                    setChoices(Map({}));
+                }
+                setPrevPurchase(Map(userDoc.data().prevPurchase || {}));
+            } else {
+                setChoices(Map({}));
+                setPrevPurchase(Map({}));
+            }
+        } catch (error) {
+            console.error("Error loading user data:", error);
+        }
+    };
+
+    const loadCartFromStorage = (userId) => {
+        try {
+            const storedCart = localStorage.getItem(`cart-${userId}`);
+            setCart(storedCart ? Map(JSON.parse(storedCart)) : Map({}));
+        } catch (error) {
+            console.error("Error loading cart from storage:", error);
+        }
+    };
+
+    const saveCartToStorage = () => {
+        if (user?.uid) {
+            localStorage.setItem(`cart-${user.uid}`, JSON.stringify(cart.toJS()));
+        }
+    };
+
+    useEffect(() => {
+        saveCartToStorage();
+    }, [cart]);
+
+    const clearState = () => {
+        setChoices(Map({}));
+        setCart(Map({}));
+        setPrevPurchase(Map({}));
+    };
 
     return (
         <StoreContext.Provider value={{
-            user, setUser, cart, setCart, choices, setChoices, genres, setGenres, prevPurchase, setPrevPurchase
+            user, setUser, cart, setCart, choices, setChoices, genres, prevPurchase, setPrevPurchase
         }}>
             {children}
         </StoreContext.Provider>
     );
 };
 
-export const useStoreContext = () => {
-    return useContext(StoreContext);
-}
+export const useStoreContext = () => useContext(StoreContext);
+

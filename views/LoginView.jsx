@@ -8,7 +8,7 @@ import "./LoginView.css"
 
 function LoginView() {
     const navigate = useNavigate();
-    const { setUser, choices, setChoices, genres } = useStoreContext();
+    const { setUser } = useStoreContext();
     const [formData, setFormData] = useState({
         email: "",
         password: "",
@@ -23,19 +23,15 @@ function LoginView() {
                 formData.email,
                 formData.password
             );
-            const docRef = doc(firestore, "users", result.user.email);
+            const docRef = doc(firestore, "users", result.user.uid);
             const docSnap = await getDoc(docRef);
             const userData = docSnap.data();
             const firstName = userData.firstName || "User";
             const lastName = userData.lastName || "Account";
-            const selectedGenres = userData.choices || [];
-            const sortedGenres = selectedGenres
-                .map((genreId) => genres.find((genre) => genre.id === genreId))
-                .filter((genre) => genre) //remove undefined genres
-                .sort((a, b) => a.genre.localeCompare(b.genre));
+
             setUser({ ...result.user, firstName, lastName });
-            setChoices(sortedGenres);
-            navigate(`/movies/genre/${sortedGenres[0].id}`);
+            navigate("/movies/genre/28"); // Default to action genre
+
         } catch (error) {
             console.error("Error logging in:", error);
             alert("Login failed. Please check your credentials.");
@@ -47,17 +43,10 @@ function LoginView() {
         const provider = new GoogleAuthProvider();
         try {
             const result = await signInWithPopup(auth, provider);
-            const docRef = doc(firestore, "users", result.user.email);
-            const docSnap = await getDoc(docRef);
-            const selectedGenres = docSnap.data()?.choices || [];
-            const sortedGenres = selectedGenres
-                .map((genreId) => genres.find((genre) => genre.id === genreId))
-                .filter((genre) => genre) //remove undefined genres
-                .sort((a, b) => a.genre.localeCompare(b.genre));
 
             setUser(result.user);
-            setChoices(sortedGenres);
-            navigate(`/movies/genre/${sortedGenres[0].id}`);
+            navigate("/movies/genre/28"); // Default to action genre
+            
         } catch (error) {
             console.error("Error logging in with Google:", error);
             alert("Google login failed. Please try again.");

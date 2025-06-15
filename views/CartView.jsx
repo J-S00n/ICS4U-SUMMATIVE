@@ -30,7 +30,7 @@ function CartView() {
                 prevPurchase: purchases.toJS(),
             }, { merge: true });
             setCart(Map({})); // Clear the cart after checkout
-            sessionStorage.removeItem(user.email);
+            localStorage.removeItem(user.email);
             alert("Checkout successful! Thank you for your purchase!");
             navigate("/movies/genre/28");
         } catch (error) {
@@ -42,8 +42,8 @@ function CartView() {
     function removeCartItem(itemId) {
         setCart((prev) => {
             const newCart = prev.delete(itemId);
-            sessionStorage.removeItem(user.email);
-            sessionStorage.setItem(user.email, JSON.stringify(newCart.toJS()));
+            localStorage.removeItem(user.email);
+            localStorage.setItem(user.email, JSON.stringify(newCart.toJS()));
             return newCart;
         });
     }
