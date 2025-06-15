@@ -1,7 +1,7 @@
 import { useStoreContext } from "../context/user";
 import { useNavigate } from "react-router-dom";
 import { firestore } from "../src/firebase";
-import { doc, setDoc, getDoc } from "firebase/firestore";
+import { doc, setDoc } from "firebase/firestore";
 import { Map } from "immutable";
 import "./CartView.css";
 

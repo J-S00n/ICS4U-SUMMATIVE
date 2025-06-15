@@ -1,14 +1,13 @@
 import { useNavigate, Link } from 'react-router-dom';
 import { useStoreContext } from '../context/user';
 import { useEffect, useState } from 'react';
-import { auth, firestore } from "../src/firebase";
-import { doc, setDoc, getDoc } from "firebase/firestore";
+import { auth } from "../src/firebase";
 import { signOut } from "firebase/auth";
 import axios from 'axios';
 
 function Header() {
     const navigate = useNavigate();
-    const { user, setUser, setPrevPurchases } = useStoreContext();
+    const { user } = useStoreContext();
     const [searchTerm, setSearchTerm] = useState("");
     const [searchResults, setSearchResults] = useState([]);
     const [showDropdown, setShowDropdown] = useState(false);

@@ -43,10 +43,15 @@ function LoginView() {
         const provider = new GoogleAuthProvider();
         try {
             const result = await signInWithPopup(auth, provider);
-
+            const docRef = doc(firestore, "users", result.user.email);
+            const userDoc = await getDoc(docRef);
+            if (!userDoc.exists()) {
+                alert("No account found for this Google email! Please register first!");
+                return;
+            }
             setUser(result.user);
             navigate("/movies/genre/28"); // Default to action genre
-            
+
         } catch (error) {
             console.error("Error logging in with Google:", error);
             alert("Google login failed. Please try again.");
