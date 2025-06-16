@@ -59,7 +59,7 @@ function SettingsView() {
         }
 
         try {
-            const credential = EmailAuthProvider.credential(currentUser.uid, formData.currentPassword);
+            const credential = EmailAuthProvider.credential(currentUser.email, formData.currentPassword);
             await reauthenticateWithCredential(currentUser, credential);
         } catch (error) {
             alert("Failed to update password. Please check your current password and try again.");

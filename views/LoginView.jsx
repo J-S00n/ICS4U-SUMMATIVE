@@ -23,7 +23,7 @@ function LoginView() {
                 formData.email,
                 formData.password
             );
-            const docRef = doc(firestore, "users", result.user.email);
+            const docRef = doc(firestore, "users", result.user.uid);
             const userDoc = await getDoc(docRef);
             const userData = userDoc.data();
             const firstName = userData.firstName || "User";
@@ -43,7 +43,7 @@ function LoginView() {
         const provider = new GoogleAuthProvider();
         try {
             const result = await signInWithPopup(auth, provider);
-            const docRef = doc(firestore, "users", result.user.email);
+            const docRef = doc(firestore, "users", result.user.uid);
             const userDoc = await getDoc(docRef);
             if (!userDoc.exists()) {
                 alert("No account found for this Google email! Please register first!");

@@ -47,7 +47,7 @@ function GenreView() {
 
         setCart((prev) => {
             const newCart = prev.set(id + "", { title, poster_path: poster });
-            localStorage.setItem(user.email, JSON.stringify(newCart.toJS())); // Use `newCart`
+            localStorage.setItem(user.uid, JSON.stringify(newCart.toJS())); // Use `newCart`
             return newCart;
         });
 

@@ -6,7 +6,6 @@ import Header from "../components/Header.jsx";
 import Footer from "../components/Footer.jsx";
 import Feature from "../components/Feature.jsx";
 
-
 function MoviesView() {
     const location = useLocation();
     const { choices } = useStoreContext();
@@ -16,7 +15,7 @@ function MoviesView() {
             <Header />
             <div className="genres-and-movies">
                 <div className="genres">
-                    <Genres genresList={choices} />
+                    <Genres genresList={choices && choices.toList ? choices.toList() : choices} />
                 </div>
                 <div className="movie-list">
                     {(location.pathname === "/movies" || location.pathname === "/movies/") && <Feature />}

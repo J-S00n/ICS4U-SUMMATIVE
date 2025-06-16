@@ -30,8 +30,8 @@ function RegisterView() {
         }
 
         const selectedGenres = Object.keys(checkboxesRef.current)
-            .filter((genreId) => checkboxesRef.current[genreId] && checkboxesRef.current[genreId].checked)
-            .map((genreId) => Number(genreId));
+            .filter((genreId) => checkboxesRef.current[genreId].checked)
+            .map(Number);
 
         if (selectedGenres.length < 5) {
             alert("Please select at least 5 genres.");
@@ -54,11 +54,12 @@ function RegisterView() {
             });
             setUser(result.user);
             setChoices(sortedGenres);
-            const docRef = doc(firestore, "users", result.user.email);
+
+            const docRef = doc(firestore, "users", result.user.uid);
             await setDoc(docRef, {
                 firstName: formData.firstName,
                 lastName: formData.lastName,
-                choices: sortedGenres.map((genre) => genre.id),
+                choices: sortedGenres,
             });
             alert("Registration successful!");
             navigate(`/movies/genre/${sortedGenres[0].id}`);
@@ -87,7 +88,7 @@ function RegisterView() {
         const provider = new GoogleAuthProvider();
         try {
             const result = await signInWithPopup(auth, provider);
-            const docRef = doc(firestore, "users", result.user.email);
+            const docRef = doc(firestore, "users", result.user.uid);
             const userDoc = await getDoc(docRef);
             if (userDoc.exists()) {
                 setUser(null);
@@ -98,7 +99,7 @@ function RegisterView() {
                 setUser(result.user);
                 setChoices(sortedGenres);
                 await setDoc(docRef, {
-                    choices: sortedGenres.map((genre) => genre.id),
+                    choices: sortedGenres,
                 });
             }
             navigate(`/movies/genre/${sortedGenres[0].id}`);

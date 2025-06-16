@@ -46,7 +46,7 @@ function SearchView() {
 
         setCart((prev) => {
             const newCart = prev.set(id + "", { title, poster_path: poster });
-            sessionStorage.setItem(user.email, JSON.stringify(newCart.toJS())); // Use `newCart`
+            sessionStorage.setItem(user.uid, JSON.stringify(newCart.toJS())); // Use `newCart`
             return newCart;
         });
 

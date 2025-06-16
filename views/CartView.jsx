@@ -24,13 +24,13 @@ function CartView() {
     async function handleCheckout() {
         const purchases = prevPurchase.merge(cart);
         setPrevPurchase(purchases);
-        const docRef = doc(firestore, "users", user.email);
+        const docRef = doc(firestore, "users", user.uid);
         try {
             await setDoc(docRef, {
                 prevPurchase: purchases.toJS(),
             }, { merge: true });
             setCart(Map({})); // Clear the cart after checkout
-            localStorage.removeItem(user.email);
+            localStorage.removeItem(user.uid);
             alert("Checkout successful! Thank you for your purchase!");
             navigate("/movies/genre/28");
         } catch (error) {
@@ -42,8 +42,8 @@ function CartView() {
     function removeCartItem(itemId) {
         setCart((prev) => {
             const newCart = prev.delete(itemId);
-            localStorage.removeItem(user.email);
-            localStorage.setItem(user.email, JSON.stringify(newCart.toJS()));
+            localStorage.removeItem(user.uid);
+            localStorage.setItem(user.uid, JSON.stringify(newCart.toJS()));
             return newCart;
         });
     }
